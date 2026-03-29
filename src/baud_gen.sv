@@ -7,7 +7,7 @@ module baud_gen #(
     output logic tick       // single pulse
 );
 
-    localparam int TICK_COUNT = int'((CLK_FREQ*(10^6)/(BAUD_RATE*16.0)) + 0.5); // 0.5 helps with the rounding to nearest
+    localparam int TICK_COUNT = int'((CLK_FREQ*(10**6)/(BAUD_RATE*16.0)) + 0.5); // 0.5 helps with the rounding to nearest
     logic [$clog2(TICK_COUNT)-1:0] count;
 
     always_ff @ (posedge sys_clk) begin
