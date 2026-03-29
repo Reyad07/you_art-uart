@@ -36,7 +36,7 @@ module uart_tx #(
             tx_done_o  <= '0;
             tick_count <= '0;
             bit_indx   <= '0;
-            next_state <= IDLE;
+            state      <= IDLE;
         end
         else if (tick_i) begin          //! no else statement
             case (state)
