@@ -1,5 +1,5 @@
 module uart_top #(
-    parameter int CLK_FREQ = 50,    // MHz
+    parameter int CLK_FREQ  = 50,    // MHz
     parameter int BAUD_RATE = 9600    
 )(
     // System Signals
@@ -24,44 +24,43 @@ module uart_top #(
     output logic       uart_tx_o   // Connects to external RX
 );
 
+    logic tick_i;
+
     baud_gen #(
-        parameter int CLK_FREQ= 50,     // in MHz
-        parameter int BAUD_RATE = 9600  // bps
+        .CLK_FREQ (CLK_FREQ ),
+        .BAUD_RATE(BAUD_RATE)  
     ) u_baud_gen (
-        input logic sys_clk,
-        input logic rst_n,
-        output logic tick       // single pulse
+        .sys_clk (clk_i),   
+        .rst_n   (rst_n),
+        .tick    (tick_i)
     );
 
     uart_tx #(
-        parameter int CLK_FREQ = 50,    // MHz
-        parameter int BAUD_RATE = 9600
+        .CLK_FREQ   (CLK_FREQ ),
+        .BAUD_RATE  (BAUD_RATE)
     ) u_tx (
-        .clk_i      ,
-        .rst_n      ,
-        .tx_start_i     ,
-        .tx_data_i      ,    //TODO: parameterized?
-        .tick_i     ,
-        .tx_busy_o      ,
-        .tx_data_o      , // output tx wire for RX pin
-        .tx_done_o      
+        .clk_i      (clk_i     ),
+        .rst_n      (rst_n     ),
+        .tx_start_i (tx_start_i),
+        .tx_data_i  (tx_data_i ),
+        .tick_i     (tick_i    ),
+        .tx_busy_o  (tx_busy_o ),
+        .tx_data_o  (uart_tx_o ),
+        .tx_done_o  (tx_done_o )    
     );
     uart_rx #(
-        parameter int CLK_FREQ = 50,    // MHz
-        parameter int BAUD_RATE = 9600
+        .CLK_FREQ  (CLK_FREQ ),
+        .BAUD_RATE (BAUD_RATE)
     )u_rx(
-        input  logic       clk_i,
-        input  logic       rst_n,
-        input  logic       rx_i,          // The physical serial input wire
-        input  logic       tick_i,        // 16x oversampling pulse from baud_gen
-        
-        output logic [7:0] rx_data_o,     // Parallel data byte received
-        output logic       rx_done_o,     // Pulse high when a full frame is ready
-        output logic       rx_busy_o,     // High while a frame is being sampled
-        
-        // Status Flags
-        output logic       parity_err_o,  // High if calculated parity != received parity
-        output logic       framing_err_o  // High if stop bits are not '1'
+        .clk_i          (clk_i          ),
+        .rst_n          (rst_n          ),
+        .rx_i           (uart_rx_i      ),      
+        .tick_i         (tick_i         ),      
+        .rx_data_o      (rx_data_o      ),    
+        .rx_done_o      (rx_done_o      ),    
+        .rx_busy_o      (rx_busy_o      ),    
+        .parity_err_o   (parity_err_o   ) , 
+        .framing_err_o  (framing_err_o  )
     );
 
 endmodule

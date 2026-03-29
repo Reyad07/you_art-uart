@@ -32,7 +32,7 @@ module uart_tx #(
     always_ff @ (posedge clk_i) begin
         if (!rst_n) begin
             tx_busy_o  <= '0;
-            tx_data_o  <= 1b'1;  // by default tx line should be high
+            tx_data_o  <= 1'b1;  // by default tx line should be high
             tx_done_o  <= '0;
             tick_count <= '0;
             bit_indx   <= '0;

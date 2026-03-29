@@ -33,7 +33,7 @@ module uart_rx #(
     always_ff @(posedge clk_i) begin
         if (!rst_n) begin
             rx_sync_1   <= 1'b1;    // by default UART is HIGH
-            rx_sync_2   <= 1'b1;    // by default UART is HIGH
+            rx_sync     <= 1'b1;    // by default UART is HIGH
         end
         else begin
             rx_sync_1   <= rx_i;        // might go to metastable
