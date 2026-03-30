@@ -21,9 +21,10 @@ module uart_rx #(
     logic rx_sync;      // 2nd stage
 
     typedef enum logic [2:0] { IDLE, START, DATA_FRAME, PARITY, STOP } state_t;
-    state_t state, next_state;
+    state_t state = IDLE;
     logic [7:0] rx_shift_data;  //internal register to store the tx_data_i temporarily
     logic [3:0] tick_count;     // counter for baud_gen tick
+    logic [4:0] stop_count;     // counter for stop count: 2bits
     logic [2:0] bit_indx;       // counter to track 8 bit of data fot the data frame
 
     logic neg_edge;     //! detect the start bit that goes from high to low
@@ -50,7 +51,9 @@ module uart_rx #(
             framing_err_o   <= '0;
             rx_shift_data   <= '0;
             tick_count      <= '0;
+            stop_count      <= '0;
             bit_indx        <= '0;
+            state           <= IDLE;
         end
         else begin
             case (state)
@@ -60,10 +63,10 @@ module uart_rx #(
                     tick_count  <= '0;
                     bit_indx    <= '0;
                     if (neg_edge) begin
-                        next_state  <= START;
+                        state  <= START;
                     end
                     else begin
-                        next_state  <= IDLE;
+                        state  <= IDLE;
                     end
                 end
 
@@ -73,10 +76,10 @@ module uart_rx #(
                         if(tick_count == 7) begin
                             if (!rx_sync) begin
                                 tick_count  <= '0;
-                                next_state  <= DATA_FRAME;
+                                state  <= DATA_FRAME;
                             end
                             else begin
-                                next_state  <= IDLE;        // as it was not a start bit
+                                state  <= IDLE;        // as it was not a start bit
                             end
                         end
                         else begin
@@ -84,7 +87,7 @@ module uart_rx #(
                         end
                     end
                     else begin
-                        next_state  <= START;       //! check whether to stay in this state or go to IDLE
+                        state  <= START;       //! check whether to stay in this state or go to IDLE
                     end
                 end
 
@@ -92,7 +95,7 @@ module uart_rx #(
                     if (tick_i) begin
                         if (bit_indx == 8) begin
                             bit_indx    <= '0;
-                            next_state  <= PARITY;
+                            state  <= PARITY;
                         end
                         else begin
                             bit_indx    <= bit_indx + 1;
@@ -107,7 +110,7 @@ module uart_rx #(
                         end
                     end
                     else begin
-                        next_state  <= DATA_FRAME;
+                        state  <= DATA_FRAME;
                     end
                 end
 
@@ -122,43 +125,43 @@ module uart_rx #(
                         end
                     end
                     else begin
-                        next_state  <= PARITY;
+                        state  <= PARITY;
                     end
                 end
 
                 STOP: begin
                     if (tick_i) begin
-                        if (tick_count == 15) begin
+                        if (stop_count == 15) begin
                             if (!rx_sync) begin
                                framing_err_o    <= 1'b1;
-                               next_state       <= IDLE;        //! check STOP state
+                               state       <= IDLE;        //! check STOP state
                             end
                             else begin 
                                 framing_err_o   <= 1'b0;
                             end
                         end
-                        else if (tick_count == 31 && !framing_err_o) begin
+                        else if (stop_count == 31 && !framing_err_o) begin
                             if (!rx_sync) begin 
                                 framing_err_o <= 1'b1;
-                                next_state      <= IDLE;
+                                state      <= IDLE;
                             end
                             else begin
                                 framing_err_o   <= 1'b0;
                             end
-                            tick_count  <= '0;
+                            stop_count  <= '0;
                         end
                         else begin
-                            tick_count  <= tick_count + 1;
+                            stop_count  <= stop_count + 1;
                         end
                     end
                     else begin
-                        next_state  <= STOP;
+                        state  <= STOP;
                     end
                     rx_busy_o   <= 1'b0;
                     rx_done_o   <= 1'b1;
                 end
 
-                default: next_state <= IDLE;
+                default: state <= IDLE;
             endcase
         end
     end
