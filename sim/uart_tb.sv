@@ -1,6 +1,6 @@
 module uart_tb;
 
-    localparam int CLK_FREQ = 50;
+    localparam int CLK_FREQ = 1;
     localparam int BAUD_RATE = 9600;
 
     logic       clk_i = 0    ;
@@ -43,15 +43,23 @@ module uart_tb;
         tx_start_i  <= 1'b0;
         repeat(5) @ (posedge clk_i);
         rst_n       <= 1'b1;
-        tx_data_i   <= 8'hAA;
+        $display("RESET Removed");
+        wait(u_uart_top.tick_i);
         tx_start_i  <= 1'b1;
-        @(posedge clk_i);
-        tx_start_i  <= 1'b0;
-
+        tx_data_i   <= 8'hAB;
+//        @(posedge u_uart_top.tick_i);
+//        tx_start_i  <= 1'b0;
+        $display("Waiting for rx_done_o");
         wait(rx_done_o);
         repeat(2) @(posedge clk_i);
-
+        
+        $finish;
     end
+    
+//    initial begin
+//        #2000;
+//        $finish;
+//    end
 
 
 endmodule
