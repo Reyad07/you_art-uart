@@ -1,135 +1,92 @@
 /*
+This module implements the slower clock logic
+
 Data Packet: 
             start bit + Data frame + parity bit + Stop bit
 ------------------------------------------------------------
 start bit: 1 bit
 Data frame: 8 bit
-Parity bit: 1 bit
-Stop bit: 2 bit
+Parity bit: TODO
+Stop bit: 1 bit
+
+CLK_FREQ = System Clock
+Assuming it to be 1MHZ which means 1us time period
+
+BAUD_RATE = 9600
+Doing inverse gives: 0.1ms -> single bit duration of UART
+this is very slow compare to system clock
+
+ratio = bit duration = clock_count = CLK_FREQ/BAUD_RATE
+half period = clock_count/2
 */
 
 module uart_tx #(
-    parameter int CLK_FREQ = 50,    // MHz
+    parameter int CLK_FREQ = 1000000,    // Hz
     parameter int BAUD_RATE = 9600
 )(
     input   logic       clk_i,
     input   logic       rst_n,
-    input   logic       tx_start_i,
+    input   logic       tx_new_data_i, // 1: start sampling data that is present in tx_data_i
     input   logic [7:0] tx_data_i,    //TODO: parameterized?
-    input   logic       tick_i,
-    output  logic       tx_busy_o,
-    output  logic       tx_data_o, // output tx wire for RX pin
-    output  logic       tx_done_o
+    output  logic       tx, // output tx wire for RX pin
+    output  logic       tx_done_o   // after transmission is done it will be high for single clk
 );
 
-    typedef enum logic [2:0] { IDLE=0, START, DATA_FRAME, PARITY, STOP } state_t;
-    state_t state = IDLE;
-    logic [7:0] data;           //internal register to store the tx_data_i temporarily
-    logic [3:0] tick_count;     // counter for baud_gen tick
-    logic [4:0] stop_count;     // counter for 2 stop bits
-    logic [2:0] bit_indx;       // counter to track 8 bit of data fot the data frame
-    logic parity_bit;           // store the parity bit internally
-    logic tx_out;               // internal tx output
-    
-    always_comb parity_bit = ^data;
-    always_comb tx_data_o = tx_out;
-    
-//    always_ff @(posedge clk_i) begin
-//        if (!rst_n) begin
-            
-//        end
-//        else if (tick_i) begin
-//        end 
-//    end 
-    
-    always_ff @ (posedge clk_i) begin
-        if (!rst_n) begin
-            tx_busy_o  <= '0;
-            tx_out  <= 1'b1;  // by default tx line should be high
-            tx_done_o  <= '0;
-            tick_count <= '0;
-            stop_count <= '0;
-            bit_indx   <= '0;
-            state      <= IDLE;
+    localparam clock_count = CLK_FREQ(/BAUD_RATE); // bit duration
+
+    logic tx_clk = '0;  // transmitter clock
+    logic [7:0] data;   // temp variable to hold tx_data_i
+    int count;
+    int tx_count;   // counter for tx to count up to 7 to ensure 8 bits transferred
+
+    typedef enum logic [2:0] { IDLE=0, DATA, DONE } state_t;
+    state_t state;
+
+    always_ff @( poseedge clk_i ) begin
+        if (count < (clock_count/2) begin
+            count <= count + 1;
         end
-        else if (tick_i) begin          //! no else statement
-            case (state)
-                IDLE:begin
-                    tx_out <= 1'b1;
-                    if (tx_start_i) begin
+        else begin
+            count <= '0;
+            tx_clk <= ~tx_clk;
+        end
+    end
+    
+    always_ff (poseedge tx_clk) begin
+        if (~rst_n) begin
+            state <= IDLE;
+        end
+        else begin
+            case(state)
+                IDLE: begin
+                    tx <= 1'b1;
+                    tx_done_o <= '0;
+                    if (tx_new_data_i) begin
+                        tx <= '0;
                         data <= tx_data_i;
-//                        parity_bit <= ^data;    //! valid? or use comb block?
-                        state <= START;
-                        $display("State: %s",state.name);
+                        state <= DATA;
                     end
                     else begin
                         state <= IDLE;
                     end
                 end
-                START: begin
-                    $display("State: %s",state.name);
-                    tx_busy_o <= 1'b1;          // should be low in STOP
-                    tx_out <= 1'b0;          //! for how long? -- SOLVED!
-                    if (tick_count == 15) begin
-                        tick_count <= '0;
-                        state <= DATA_FRAME;
+                DATA: begin
+                    if (tx_count <= 7) begin
+                        tx_count <= tx_count + 1;
+                        tx <= data[tx_count];
+                        state <= DATA;
                     end
                     else begin
-                        tick_count <= tick_count + 1;
-                        state <= START;
-                    end
-                    
+                        tx_count <= '0;
+                        state <= DONE;
+                    end 
                 end
-                DATA_FRAME:begin
-                    $display("State: %s",state.name);
-                    if (bit_indx == 7) begin
-                        $display("Bit Index 8");
-                        bit_indx    <= '0;
-                        state       <= PARITY;
-                    end
-                    else begin                              // if bit_indx < 7
-                        if (tick_count == 15) begin
-                            $display("=================================");
-                            $display("Tick count 15 = %0d && bit_index = %0d",tick_count, bit_indx);
-                            tick_count  <= '0;
-                            tx_out   <= data[bit_indx];
-                            bit_indx    <= bit_indx + 1;
-//                            state  <= DATA_FRAME;
-                        end
-                        else begin
-                            $display("tick_count = %0d",tick_count);
-                            tick_count <= tick_count + 1;
-                        end
-                        state  <= DATA_FRAME;  // ! check next state placement logic
-                    end
+                DONE: begin
+                    tx <= 1'b1; // send single stop bit
+                    tx_done_o <= 1'b1;
+                    state <= IDLE;
                 end
-                PARITY: begin
-                    $display("State: %s",state.name);
-                    tx_out <= parity_bit;
-                    if (tick_count == 15) begin
-                        tick_count <= '0;
-                        state <= STOP;
-                    end
-                    else begin
-                        tick_count <= tick_count + 1;
-                        state <= PARITY;
-                    end
-                end
-                STOP: begin
-                    tx_out   <= 1'b1;
-                    if(stop_count == 31) begin      // stop bit should remain high for atleast 2 bit duration = 16 + 16 = 32
-                        $display("State: %s",state.name);
-                        stop_count  <= '0;
-                        tx_busy_o   <= '0;
-                        tx_done_o   <= 1'b1;
-                        state  <= IDLE;
-                    end
-                    else begin
-                        stop_count  <= stop_count + 1;
-                        state  <= STOP;
-                    end
-                end
-                default: state = IDLE;
+            default: state <= IDLE
             endcase
         end
     end
