@@ -3,7 +3,7 @@ GUI := 0
 ifeq ($(GUI), 0)
 	XSIM_FLAGS := -runall
 else
-	XSIM_FLAGS := -gui --autoloadwcfg --view ../potato_tb.wcfg
+	XSIM_FLAGS := -gui --autoloadwcfg --view ../uart_tb.wcfg
 endif
 
 build:

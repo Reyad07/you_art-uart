@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="uart_tb.wdb" id="1">
+         <top_modules>
+            <top_module name="LogColors" />
+            <top_module name="uart_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
+      <ZoomEndTime time="275.491244 us"></ZoomEndTime>
+      <Cursor1Time time="161.157157 us"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="175"></NameColumnWidth>
+      <ValueColumnWidth column_width="105"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="16" />
+   <wvobject fp_name="/uart_tb/u_uart_top/clk_i" type="logic">
+      <obj_property name="ElementShortName">clk_i</obj_property>
+      <obj_property name="ObjectShortName">clk_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/u_uart_top/rst_n" type="logic">
+      <obj_property name="ElementShortName">rst_n</obj_property>
+      <obj_property name="ObjectShortName">rst_n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/u_uart_top/u_tx/tx_clk" type="logic">
+      <obj_property name="ElementShortName">tx_clk</obj_property>
+      <obj_property name="ObjectShortName">tx_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/tx_new_data" type="logic">
+      <obj_property name="ElementShortName">tx_new_data</obj_property>
+      <obj_property name="ObjectShortName">tx_new_data</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/tx_data" type="array">
+      <obj_property name="ElementShortName">tx_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_data[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/tx_done" type="logic">
+      <obj_property name="ElementShortName">tx_done</obj_property>
+      <obj_property name="ObjectShortName">tx_done</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/u_uart_top/u_tx/tx_count" type="array">
+      <obj_property name="ElementShortName">tx_count[31:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_count[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/tx" type="logic">
+      <obj_property name="ElementShortName">tx</obj_property>
+      <obj_property name="ObjectShortName">tx</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/txdata" type="array">
+      <obj_property name="ElementShortName">txdata[7:0]</obj_property>
+      <obj_property name="ObjectShortName">txdata[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/u_uart_top/u_rx/rx_clk" type="logic">
+      <obj_property name="ElementShortName">rx_clk</obj_property>
+      <obj_property name="ObjectShortName">rx_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/rx" type="logic">
+      <obj_property name="ElementShortName">rx</obj_property>
+      <obj_property name="ObjectShortName">rx</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/rx_data" type="array">
+      <obj_property name="ElementShortName">rx_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_data[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/u_uart_top/u_rx/rx_data_o" type="array">
+      <obj_property name="ElementShortName">rx_data_o[7:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_data_o[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/u_uart_top/u_rx/rx_count" type="array">
+      <obj_property name="ElementShortName">rx_count[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_count[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/rx_done" type="logic">
+      <obj_property name="ElementShortName">rx_done</obj_property>
+      <obj_property name="ObjectShortName">rx_done</obj_property>
+   </wvobject>
+   <wvobject fp_name="/uart_tb/rxdata" type="array">
+      <obj_property name="ElementShortName">rxdata[7:0]</obj_property>
+      <obj_property name="ObjectShortName">rxdata[7:0]</obj_property>
+   </wvobject>
+</wave_config>

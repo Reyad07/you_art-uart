@@ -4,7 +4,7 @@ module uart_tb;
     localparam int CLK_FREQ = 1000000;
     localparam int BAUD_RATE = 9600;
 
-    logic       clk;
+    logic       clk = 0;
     logic       rst_n;
     logic       tx_new_data;
     logic [7:0] tx_data;

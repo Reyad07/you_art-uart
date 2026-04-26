@@ -37,7 +37,7 @@ module uart_rx #(
         else begin
             case(state)
                 IDLE:begin
-                    data <= '0;
+                    rx_data_o <= '0;
                     rx_count <= '0;
                     rx_done_o <= '0;
                     if (rx == 1'b0) begin
@@ -50,7 +50,7 @@ module uart_rx #(
                 DATA:begin
                     if (rx_count <= 7) begin
                         rx_count <= rx_count + 1;
-                        data <= {rx, data[7:1]};
+                        rx_data_o <= {rx, rx_data_o[7:1]};
                     end
                     else begin
                         rx_count <= '0;
