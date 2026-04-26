@@ -32,7 +32,7 @@ module uart_tx #(
     output  logic       tx_done_o   // after transmission is done it will be high for single clk
 );
 
-    localparam clock_count = CLK_FREQ(/BAUD_RATE); // bit duration
+    localparam clock_count = (CLK_FREQ/BAUD_RATE); // bit duration
 
     logic tx_clk = '0;  // transmitter clock
     logic [7:0] data;   // temp variable to hold tx_data_i
@@ -42,8 +42,8 @@ module uart_tx #(
     typedef enum logic [2:0] { IDLE=0, DATA, DONE } state_t;
     state_t state;
 
-    always_ff @( poseedge clk_i ) begin
-        if (count < (clock_count/2) begin
+    always_ff @( posedge clk_i ) begin
+        if (count < (clock_count/2)) begin
             count <= count + 1;
         end
         else begin
@@ -52,7 +52,7 @@ module uart_tx #(
         end
     end
     
-    always_ff (poseedge tx_clk) begin
+    always_ff @(posedge tx_clk) begin
         if (~rst_n) begin
             state <= IDLE;
         end
@@ -86,7 +86,7 @@ module uart_tx #(
                     tx_done_o <= 1'b1;
                     state <= IDLE;
                 end
-            default: state <= IDLE
+            default: state <= IDLE;
             endcase
         end
     end

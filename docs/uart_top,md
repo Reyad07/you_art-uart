@@ -1,3 +1,0 @@
-## Top Module Diagram
-Encapsulates 3 modules inside: `baude_gen`, `uart_tx`, and `uart_rx`.
-![alt text](image.png)
