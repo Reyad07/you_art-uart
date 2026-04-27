@@ -42,12 +42,25 @@ module uart_tb;
         tx_new_data   <= '0;
         tx_data       <= '0;
         rx            <= '0;
-        $display ("%s::::::::::::::::REMOVING RESET::::::::::::::::%s",GREEN,RESET);
+        $display ("%s::::::::::::::::REMOVING RESET::::::::::::::::%s\n",GREEN,RESET);
     endtask
+
+    task automatic compare (logic [7:0] RTL, logic [7:0] TB, bit type_);     // type_: 0 -> tx, type_:1 -> rx
+        if (RTL!= TB) begin
+            if (type_) begin 
+                $display("%sRx did not match: RX_DATA = 0x%h     Expected RXDATA: 0x%h%s",RED, RTL, TB, RESET);
+            end
+            else begin
+                $display("%sRx did not match: RX_DATA = 0x%h     Expected RXDATA: 0x%h%s",RED, RTL, TB, RESET);
+            end
+        end
+    endtask
+
 
     initial begin
         apply_reset();
         
+        $display("\n%s||||||||||  UART Transmitter  ||||||||||%s\n",BLUE,RESET);
         for (int i = 0; i< 10; i++) begin
             tx_new_data <= 1'b1;            // indicate the start of transmitter transmission
             tx_data     <= $urandom;
@@ -61,8 +74,13 @@ module uart_tb;
             end
             
             @(posedge tx_done);
+            compare(tx_data,txdata,0);
+            // if (tx_data != txdata) begin
+            //     $display("%sTx did not match: tx_data_i = %0h     Expected txdata: %0h%s",RED, tx_data, txdata, RESET);
+            // end
         end
-
+        
+        $display("\n%s||||||||||  UART Receiver  ||||||||||%s\n",MAGENTA,RESET);
         for (int i = 0; i< 10; i++) begin
             tx_new_data <= 1'b0;        // making sure the transmitter is turned off
             rx <= '0;   // at the start rx should be 0
@@ -74,6 +92,10 @@ module uart_tb;
             end
             
             @(posedge rx_done);
+            compare(rx_data,rxdata,1);
+            // if (rx_data != rxdata) begin
+            //     $display("%sRX did not match: rx_data = 0x%h     Expected rxdata: 0x%h%s",RED, rx_data, rxdata, RESET);
+            // end
         end
         
         $finish;
