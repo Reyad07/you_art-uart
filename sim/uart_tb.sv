@@ -13,6 +13,9 @@ module uart_tb;
     logic       rx_done;
     logic       rx;
     logic       tx;
+    int         txpass = 0;
+    int         rxpass = 0;
+    localparam  LOOP =10;
 
     logic [7:0] txdata;    // for comparing data with RTL
     logic [7:0] rxdata;    // for comparing data with RTL
@@ -39,10 +42,13 @@ module uart_tb;
         rst_n         <= '0;
         repeat(5) @(posedge clk);
         rst_n         <= 1'b1;
+        $display ("%s::::::::::::::::REMOVING RESET::::::::::::::::%s",GREEN,RESET);
         tx_new_data   <= '0;
         tx_data       <= '0;
         rx            <= '0;
-        $display ("%s::::::::::::::::REMOVING RESET::::::::::::::::%s\n",GREEN,RESET);
+        @(posedge clk);
+
+        $display("%sAFTER REMOVING RESET: tx_new_data:%0d tx_data:%0d rx:%0d%s\n",GREEN, tx_new_data, tx_data, rx, RESET);
     endtask
 
     task automatic compare (logic [7:0] RTL, logic [7:0] TB, bit type_);     // type_: 0 -> tx, type_:1 -> rx
@@ -51,21 +57,31 @@ module uart_tb;
                 $display("%sRx did not match: RX_DATA = 0x%h     Expected RXDATA: 0x%h%s",RED, RTL, TB, RESET);
             end
             else begin
-                $display("%sRx did not match: RX_DATA = 0x%h     Expected RXDATA: 0x%h%s",RED, RTL, TB, RESET);
+                $display("%sTX did not match: TX_DATA = 0x%h     Expected TXDATA: 0x%h%s",RED, RTL, TB, RESET);
             end
         end
+        else
+            if (type_) begin 
+                rxpass++;
+            end
+            else begin
+                txpass++;
+            end
     endtask
 
 
     initial begin
         apply_reset();
         
-        $display("\n%s||||||||||  UART Transmitter  ||||||||||%s\n",BLUE,RESET);
-        for (int i = 0; i< 10; i++) begin
-            tx_new_data <= 1'b1;            // indicate the start of transmitter transmission
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////// TRANMITTER   ////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        $display("%s||||||||||  UART Transmitter  ||||||||||%s",BLUE,RESET);
+        for (int i = 0; i< LOOP; i++) begin
+            tx_new_data <= 1'b1;        // indicate the start of transmitter transmission
             tx_data     <= $urandom;
 
-            wait (tx == 0); // wait for tx line to go low to indicate the start of transaction
+            wait (tx == 0);             // wait for tx line to go low to indicate the start of transaction
             @(posedge u_uart_top.u_tx.tx_clk);
 
             for (int j = 0; j<8; j++) begin
@@ -75,16 +91,17 @@ module uart_tb;
             
             @(posedge tx_done);
             compare(tx_data,txdata,0);
-            // if (tx_data != txdata) begin
-            //     $display("%sTx did not match: tx_data_i = %0h     Expected txdata: %0h%s",RED, tx_data, txdata, RESET);
-            // end
         end
-        
-        $display("\n%s||||||||||  UART Receiver  ||||||||||%s\n",MAGENTA,RESET);
-        for (int i = 0; i< 10; i++) begin
-            tx_new_data <= 1'b0;        // making sure the transmitter is turned off
-            rx <= '0;   // at the start rx should be 0
+        $display("%s UART TX Passed: %0d/%0d %s\n",BLUE, txpass, LOOP, RESET);
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        /// //////////////////////////// RECEIVER  ////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        $display("\n%s||||||||||  UART Receiver  ||||||||||%s",MAGENTA,RESET);
+        for (int i = 0; i< LOOP; i++) begin
+            tx_new_data <= 1'b0;    // making sure the transmitter is turned off
+            rx <= '0;               // at the start rx should be 0
+            
             for (int j = 0; j < 8; j++) begin
                 @(posedge u_uart_top.u_rx.rx_clk);
                 rx = $urandom;
@@ -93,12 +110,10 @@ module uart_tb;
             
             @(posedge rx_done);
             compare(rx_data,rxdata,1);
-            // if (rx_data != rxdata) begin
-            //     $display("%sRX did not match: rx_data = 0x%h     Expected rxdata: 0x%h%s",RED, rx_data, rxdata, RESET);
-            // end
         end
+        $display("%s UART RX Passed: %0d/%0d %s\n",MAGENTA, rxpass, LOOP, RESET);
         
         $finish;
     end
-
+    
 endmodule
