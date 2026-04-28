@@ -13,7 +13,6 @@ module uart_rx #(
     localparam clock_count = (CLK_FREQ/BAUD_RATE); // bit duration
 
     logic rx_clk = '0;  // receiver clock
-    logic [7:0] data;   // temp variable to hold tx_data_i
     int count;
     int rx_count;   // counter for tx to count up to 7 to ensure 8 bits transferred
 
