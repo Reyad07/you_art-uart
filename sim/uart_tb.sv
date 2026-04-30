@@ -1,5 +1,11 @@
 module uart_tb;
-    import LogColors::*;
+    import log_color_pkg::RED;
+    import log_color_pkg::GREEN;
+    import log_color_pkg::YELLOW;
+    import log_color_pkg::BLUE;
+    import log_color_pkg::MAGENTA;
+    import log_color_pkg::CYAN;
+    import log_color_pkg::RESET;
 
     localparam int CLK_FREQ = 1000000;
     localparam int BAUD_RATE = 9600;

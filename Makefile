@@ -1,27 +1,51 @@
+export SHELL=/bin/bash
+
+export YOU_ART-UART=$(CURDIR)
+
+TOP := uart_tb
+
+FL += $(YOU_ART-UART)/pkg/log_color_pkg.sv 
+FL += $(YOU_ART-UART)/src/simple/uart_rx.sv 
+FL += $(YOU_ART-UART)/src/simple/uart_tx.sv
+FL += $(YOU_ART-UART)/src/simple/uart_top.sv
+
+FL += $(YOU_ART-UART)/sim/uart_tb.sv
+
+BUILD := $(YOU_ART-UART)/BUILD
+
 GUI := 0
 
-ifeq ($(GUI), 0)
-	XSIM_FLAGS := -runall
+EWHL := | grep -iE "Error:|Warning:|" --color=auto
+
+ifneq ($(GUI),0)
+	SIM_ARGS += -gui
 else
-	XSIM_FLAGS := -gui --autoloadwcfg --view ../uart_tb.wcfg
+	SIM_ARGS += -runall
 endif
 
-build:
-	@mkdir -p build
-	@echo "*" > build/.gitignore
-
-.PHONY: run
-run:
-	@make -s build
-	@cd build && xvlog -sv ../pkg/log_color_pkg.sv ../src/uart_tx.sv ../src/uart_rx.sv ../src/uart_top.sv ../sim/uart_tb.sv
-	@cd build && xelab uart_tb -s uart_tb -debug all
-	@cd build && xsim uart_tb $(XSIM_FLAGS)
+$(BUILD):
+	@echo "Creating build directory at $@"
+	@mkdir -p $@
+	@echo "*" > $@/.gitignore
 
 .PHONY: clean
 clean:
-	@rm -rf build
+	@rm -rf $(BUILD)
 
 .PHONY: all
 all:
+	@make -s compile
+	@make -s simulate TOP=$(TOP)
+
+.PHONY: compile
+compile:
 	@make -s clean
-	@make -s run
+	@make -s $(BUILD)
+	@cd $(BUILD) && xvlog -sv $(FL)
+	@cd $(BUILD) && xelab $(TOP) -s top -debug all $(EWHL)
+
+.PHONY: simulate
+simulate:
+	@echo "--testplusarg TOP=$(TOP)" > $(BUILD)/sim_args
+	@echo "$(SIM_ARGS)" >> $(BUILD)/sim_args
+	@cd $(BUILD) && xsim top -f $(BUILD)/sim_args $(EWHL)
