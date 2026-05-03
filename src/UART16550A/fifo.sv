@@ -35,7 +35,7 @@ module fifo #(
     logic [WIDTH-1:0] mem [DEPTH];  // declaring memory
 
     // empty flag handling
-    always_ff @(posedge clk, posedge arst_n) begin
+    always_ff @(posedge clk or negedge arst_n) begin
         if (~arst_n) begin
             empty_f <= 1'b0;
         end
@@ -49,7 +49,7 @@ module fifo #(
     end
 
     // full flag handling
-    always_ff @(posedge clk, posedge arst_n) begin
+    always_ff @(posedge clk or negedge arst_n) begin
         if (~arst_n) begin
             full_f <= 1'b0;
         end
@@ -63,7 +63,7 @@ module fifo #(
     end
 
     // write counter update
-        always_ff @(posedge clk, posedge arst_n) begin
+        always_ff @(posedge clk or negedge arst_n) begin
         if (~arst_n) begin
             ptr <= '0;
         end
@@ -91,7 +91,7 @@ module fifo #(
     end
 
         // memory update
-    always_ff @(posedge clk, posedge arst_n) begin
+    always_ff @(posedge clk) begin
         case ({push_f,pop_f})
         2'b00: ;
         2'b01: begin
@@ -116,7 +116,7 @@ module fifo #(
     end
 
     // underrun handling
-    always_ff @(posedge clk, posedge arst_n) begin
+    always_ff @(posedge clk or negedge arst_n) begin
         if (~arst_n) begin
             underrun_f <= '0;
         end
@@ -131,7 +131,7 @@ module fifo #(
     end
 
     // overrun handling
-    always_ff @(posedge clk, posedge arst_n) begin
+    always_ff @(posedge clk or negedge arst_n) begin
         if (~arst_n) begin
             overrun_f <= '0;
         end
@@ -146,7 +146,7 @@ module fifo #(
     end
 
     // threshold handling
-    always_ff @(posedge clk, posedge arst_n) begin
+    always_ff @(posedge clk or negedge arst_n) begin
         if (~arst_n) begin
             thrs_trig_f <= '0;
         end
