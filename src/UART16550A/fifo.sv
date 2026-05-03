@@ -13,9 +13,7 @@ module fifo #(
     input logic [$clog2(DEPTH)-1:0] threshold, // unique to 16550A
     
     input logic [WIDTH-1:0] data_in,    // fifo data in
-    output logic [WIDTH-1:0] data_out = mem[0];     // always read from the 0th location
-    
-    ,  // fifo data out
+    output logic [WIDTH-1:0] data_out,  // fifo data out
     
     // status signals
     output logic empty,     // to indicate: fifo is full
