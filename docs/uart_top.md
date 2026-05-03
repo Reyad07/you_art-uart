@@ -1,4 +1,5 @@
-## Top Module Diagram
+## Top Module
+### Location: `src/simple`
 Encapsulates 2 modules inside: `uart_tx`, and `uart_rx`.
 ![alt text](image-2.png)
 
