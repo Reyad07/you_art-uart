@@ -8,8 +8,10 @@ FL += $(YOU_ART-UART)/pkg/log_color_pkg.sv
 FL += $(YOU_ART-UART)/src/simple/uart_rx.sv 
 FL += $(YOU_ART-UART)/src/simple/uart_tx.sv
 FL += $(YOU_ART-UART)/src/simple/uart_top.sv
+FL += $(YOU_ART-UART)/src/UART16550A/fifo.sv
 
 FL += $(YOU_ART-UART)/sim/uart_tb.sv
+FL += $(YOU_ART-UART)/sim/UART16550A/fifo_tb.sv
 
 BUILD := $(YOU_ART-UART)/BUILD
 
@@ -41,11 +43,14 @@ all:
 compile:
 	@make -s clean
 	@make -s $(BUILD)
-	@cd $(BUILD) && xvlog -sv $(FL)
+	@cd $(BUILD) && xvlog -sv $(FL) $(EWHL)
 	@cd $(BUILD) && xelab $(TOP) -s top -debug all $(EWHL)
 
 .PHONY: simulate
-simulate:
+simulate: compile
 	@echo "--testplusarg TOP=$(TOP)" > $(BUILD)/sim_args
 	@echo "$(SIM_ARGS)" >> $(BUILD)/sim_args
 	@cd $(BUILD) && xsim top -f $(BUILD)/sim_args $(EWHL)
+
+run:
+	@echo "Running run"

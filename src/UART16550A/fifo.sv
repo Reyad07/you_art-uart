@@ -31,7 +31,7 @@ module fifo #(
     logic underrun_f;
     logic overrun_f;
     logic thrs_trig_f;
-    logic [$clog2(DEPTH)-1:0] ptr;  // coutner for write address
+    logic [$clog2(DEPTH)-1:0] ptr = '0;  // coutner for write address
     logic [WIDTH-1:0] mem [DEPTH];  // declaring memory
 
     // empty flag handling
@@ -70,7 +70,7 @@ module fifo #(
         else begin
             case ({push_f,pop_f})       //! not all cases included
             2'b01: begin
-                if ((empty_f==0) && (ptr!=0)) begin
+                if ((empty_f == 0) && (ptr != 0)) begin
                     ptr <= ptr - 1;
                 end
                 else begin
@@ -78,7 +78,7 @@ module fifo #(
                 end
             end
             2'b10: begin
-                if ((full_f == 0) && (ptr == '1)) begin     // ! ptr should be all 1
+                if ((full_f == 0) && (ptr != '1)) begin     // ! ptr should not be all 1
                     ptr <= ptr + 1;
                 end
                 else begin
