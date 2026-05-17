@@ -69,7 +69,7 @@ module fifo_tb;
         // threshold configuration
         threshold <= 4'hb;
         
-        // write data into the fifo
+        // write data into the fifo -- DONE
         @(posedge clk);
         for (int i=0; i<20; i++) begin
             en      <= 1'b1;
@@ -79,6 +79,21 @@ module fifo_tb;
             @(posedge clk);
         end
         $display("After write loop:\n\t empty: %0d \n\t full: %0d \n\t underrun: %0d \n\t overrun: %0d \n\t thrs_trig: %0d \n\t",empty,full,underrun,overrun,thrs_trig);
+        
+        // initialize_values;
+        // // threshold configuration
+        // threshold <= 4'hb;
+        
+        // read data from the fifo -- DONE
+        // @(posedge clk);
+        for (int i=0; i<20; i++) begin
+            en      <= 1'b1;
+            push_in <= 1'b0;
+            pop_in  <= 1'b1;
+            // data_in <= $urandom();
+            @(posedge clk);
+        end
+        $display("After read loop:\n\t empty: %0d \n\t full: %0d \n\t underrun: %0d \n\t overrun: %0d \n\t thrs_trig: %0d \n\t",empty,full,underrun,overrun,thrs_trig);
 
         @(posedge clk);
         $finish;

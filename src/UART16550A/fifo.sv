@@ -56,7 +56,7 @@ module fifo #(
         else begin
             case ({push_f,pop_f})         //! not all cases included
             2'b01: full_f <= 1'b0;
-            2'b10: full_f <= (&ptr | ~en ) ? 1'b1 : 1'b0;   // fifo full when ptr is 15 (4'b1111)
+            2'b10: full_f <= ((ptr==DEPTH) | ~en ) ? 1'b1 : 1'b0;   // fifo full when ptr is equal to DEPTH
             default: ;
             endcase
         end
@@ -121,7 +121,7 @@ module fifo #(
             underrun_f <= '0;
         end
         else begin
-            if ((empty_f==1'b1) && (pop_f==1'b1)) begin
+            if ((empty_f==1'b1) && (pop_in==1'b1)) begin
                 underrun_f <= 1'b1;
             end
             else begin
@@ -136,7 +136,7 @@ module fifo #(
             overrun_f <= '0;
         end
         else begin
-            if ((full_f==1'b1) && (push_f==1'b1)) begin
+            if ((full_f==1'b1) && (push_in==1'b1)) begin
                 overrun_f <= 1'b1;
             end
             else begin
