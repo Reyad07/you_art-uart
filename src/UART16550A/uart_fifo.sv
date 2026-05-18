@@ -1,4 +1,4 @@
-module fifo #(
+module uart_fifo #(
     parameter int WIDTH = 8,
     parameter int DEPTH = 16
 ) (
@@ -160,8 +160,8 @@ module fifo #(
         end
     end
 
-    always_comb push_f = push_in && ~full;  // TODO: test with push_f = push_in && empty    
-    always_comb pop_f = pop_in && ~empty;
+    always_comb push_f = push_in && ~full_f;  // TODO: test with push_f = push_in && empty    
+    always_comb pop_f = pop_in && ~empty_f;
     always_comb data_out = mem[0];      // always read from the 0th location
     always_comb thrs_trig = thrs_trig_f;
     always_comb full = full_f;

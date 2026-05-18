@@ -8,10 +8,10 @@ FL += $(YOU_ART-UART)/pkg/log_color_pkg.sv
 FL += $(YOU_ART-UART)/src/simple/uart_rx.sv 
 FL += $(YOU_ART-UART)/src/simple/uart_tx.sv
 FL += $(YOU_ART-UART)/src/simple/uart_top.sv
-FL += $(YOU_ART-UART)/src/UART16550A/fifo.sv
+FL += $(YOU_ART-UART)/src/UART16550A/uart_fifo.sv
 
 FL += $(YOU_ART-UART)/sim/uart_tb.sv
-FL += $(YOU_ART-UART)/sim/UART16550A/fifo_tb.sv
+FL += $(YOU_ART-UART)/sim/UART16550A/uart_fifo_tb.sv
 
 BUILD := $(YOU_ART-UART)/BUILD
 
@@ -20,7 +20,7 @@ GUI := 0
 EWHL := | grep -iE "Error:|Warning:|" --color=auto
 
 ifneq ($(GUI),0)
-	SIM_ARGS += -gui
+	SIM_ARGS += -gui --autoloadwcfg --view ../sim/wcfg/$(TOP).wcfg
 else
 	SIM_ARGS += -runall
 endif

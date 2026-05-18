@@ -1,4 +1,4 @@
-module fifo_tb;
+module uart_fifo_tb;
 
     localparam int WIDTH = 8;
     localparam int DEPTH = 10;
@@ -17,7 +17,7 @@ module fifo_tb;
     logic overrun; 
     logic thrs_trig;
 
-    fifo #(
+    uart_fifo #(
         .WIDTH(WIDTH),
         .DEPTH(DEPTH)
     ) u_fifo (
@@ -78,12 +78,10 @@ module fifo_tb;
             data_in <= $urandom();
             @(posedge clk);
         end
-        $display("After write loop:\n\t empty: %0d \n\t full: %0d \n\t underrun: %0d \n\t overrun: %0d \n\t thrs_trig: %0d \n\t",empty,full,underrun,overrun,thrs_trig);
-        
-        // initialize_values;
-        // // threshold configuration
-        // threshold <= 4'hb;
-        
+        foreach (u_fifo.mem[i]) begin
+            $display("Contents of the FIFO after writing: mem[%0d]: %0h",i, u_fifo.mem[i]);
+        end
+                
         // read data from the fifo -- DONE
         // @(posedge clk);
         for (int i=0; i<20; i++) begin
@@ -93,7 +91,9 @@ module fifo_tb;
             // data_in <= $urandom();
             @(posedge clk);
         end
-        $display("After read loop:\n\t empty: %0d \n\t full: %0d \n\t underrun: %0d \n\t overrun: %0d \n\t thrs_trig: %0d \n\t",empty,full,underrun,overrun,thrs_trig);
+        foreach (u_fifo.mem[i]) begin
+            $display("Contents of the FIFO after Read: mem[%0d]: %0h",i, u_fifo.mem[i]);
+        end
 
         @(posedge clk);
         $finish;
