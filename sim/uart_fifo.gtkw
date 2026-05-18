@@ -1,0 +1,65 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Mon May 18 08:36:53 2026
+[*]
+[dumpfile] "C:\Users\Reyad\you_art-uart\BUILD\uart_fifo.vcd"
+[dumpfile_mtime] "Mon May 18 08:34:41 2026"
+[dumpfile_size] 5211
+[savefile] "C:\Users\Reyad\you_art-uart\sim\uart_fifo.gtkw"
+[timestart] 0
+[size] 1920 1009
+[pos] -1 -1
+*-15.932542 235000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] uart_fifo_tb.
+[sst_width] 197
+[signals_width] 184
+[sst_expanded] 1
+[sst_vpaned_height] 297
+@200
+-TB
+@28
+uart_fifo_tb.clk
+uart_fifo_tb.arst_n
+uart_fifo_tb.en
+uart_fifo_tb.empty
+@25
+uart_fifo_tb.u_fifo.ptr[4:0]
+@28
+uart_fifo_tb.full
+uart_fifo_tb.push_in
+uart_fifo_tb.pop_in
+uart_fifo_tb.overrun
+uart_fifo_tb.underrun
+uart_fifo_tb.thrs_trig
+@22
+uart_fifo_tb.data_in[7:0]
+uart_fifo_tb.data_out[7:0]
+@200
+-
+-
+-Dut
+@28
+uart_fifo_tb.u_fifo.clk
+uart_fifo_tb.u_fifo.arst_n
+uart_fifo_tb.u_fifo.en
+uart_fifo_tb.u_fifo.empty
+uart_fifo_tb.u_fifo.full
+uart_fifo_tb.u_fifo.empty_f
+uart_fifo_tb.u_fifo.full_f
+uart_fifo_tb.u_fifo.push_in
+uart_fifo_tb.u_fifo.pop_in
+uart_fifo_tb.u_fifo.push_f
+uart_fifo_tb.u_fifo.pop_f
+uart_fifo_tb.u_fifo.overrun
+uart_fifo_tb.u_fifo.underrun
+uart_fifo_tb.u_fifo.overrun_f
+uart_fifo_tb.u_fifo.underrun_f
+uart_fifo_tb.u_fifo.thrs_trig
+uart_fifo_tb.u_fifo.thrs_trig_f
+@22
+uart_fifo_tb.u_fifo.data_in[7:0]
+uart_fifo_tb.u_fifo.data_out[7:0]
+@25
+uart_fifo_tb.u_fifo.ptr[4:0]
+[pattern_trace] 1
+[pattern_trace] 0

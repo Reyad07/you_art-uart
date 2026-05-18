@@ -1,7 +1,4 @@
-module uart_fifo #(
-    parameter int WIDTH = 8,
-    parameter int DEPTH = 16
-) (
+module uart_fifo (
     //global signals
     input logic clk,
     input logic arst_n,
@@ -10,10 +7,10 @@ module uart_fifo #(
     input logic en,             // fifo enable
     input logic push_in,        // used to handle overrun
     input logic pop_in,         // used to handle underrun
-    input logic [$clog2(DEPTH)-1:0] threshold, // unique to 16550A
+    input logic [3:0] threshold, // unique to 16550A
     
-    input logic [WIDTH-1:0] data_in,    // fifo data in
-    output logic [WIDTH-1:0] data_out,  // fifo data out
+    input logic [7:0] data_in,    // fifo data in
+    output logic [7:0] data_out,  // fifo data out
     
     // status signals
     output logic empty,     // to indicate: fifo is full
@@ -31,8 +28,8 @@ module uart_fifo #(
     logic underrun_f;
     logic overrun_f;
     logic thrs_trig_f;
-    logic [$clog2(DEPTH)-1:0] ptr = '0;  // coutner for write address
-    logic [WIDTH-1:0] mem [DEPTH];  // declaring memory
+    logic [3:0] ptr = '0;  // coutner for write address
+    logic [7:0] mem [16];  // declaring memory
 
     // empty flag handling
     always_ff @(posedge clk or negedge arst_n) begin
@@ -56,7 +53,7 @@ module uart_fifo #(
         else begin
             case ({push_f,pop_f})         //! not all cases included
             2'b01: full_f <= 1'b0;
-            2'b10: full_f <= ((ptr==DEPTH) | ~en ) ? 1'b1 : 1'b0;   // fifo full when ptr is equal to DEPTH
+            2'b10: full_f <= ( &(ptr) | ~en ) ? 1'b1 : 1'b0;   // fifo full when ptr 
             default: ;
             endcase
         end
@@ -78,7 +75,7 @@ module uart_fifo #(
                 end
             end
             2'b10: begin
-                if ((full_f == 0) && (ptr != '1)) begin     // ! ptr should not be all 1
+                if ((full_f == 0) && (ptr != 4'hf)) begin     // ! ptr should not be all 1
                     ptr <= ptr + 1;
                 end
                 else begin
@@ -95,20 +92,20 @@ module uart_fifo #(
         case ({push_f,pop_f})
         2'b00: ;
         2'b01: begin
-            for (int i = 0; i < (DEPTH-2); i++) begin       // condition: i<14 -> for DEPTH=16
+            for (int i = 0; i < 14; i++) begin
                 mem[i] <= mem[i+1];     // mem[0] <= mem[1], mem[1] <= mem[2],...
             end
-            mem[DEPTH-1] <= '0;     // mem[15] in case of DEPTH=16
+            mem[15] <= '0;
         end
 
         2'b10: begin
             mem[ptr] <= data_in;
         end
         2'b11: begin
-            for (int i = 0; i < (DEPTH-2); i++) begin       // condition: i<14 -> for DEPTH=16
+            for (int i = 0; i < 14; i++) begin
                 mem[i] <= mem[i+1];     // mem[0] <= mem[1], mem[1] <= mem[2],...
             end
-            mem[DEPTH-1] <= '0;     // mem[15] in case of DEPTH=16
+            mem[15] <= '0;
             mem[ptr - 1] <= data_in;
         end
         default: ;
