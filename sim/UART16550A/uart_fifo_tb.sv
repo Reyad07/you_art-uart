@@ -72,9 +72,7 @@ module uart_fifo_tb;
             data_in <= $urandom();
             @(posedge clk);
         end
-        // foreach (u_fifo.mem[i]) begin
-        //     $display("Contents of the FIFO after writing: mem[%0d]: %0h",i, u_fifo.mem[i]);
-        // end
+
                 
         // read data from the fifo -- DONE
         // @(posedge clk);
@@ -82,13 +80,11 @@ module uart_fifo_tb;
             en      <= 1'b1;
             push_in <= 1'b0;
             pop_in  <= 1'b1;
-            data_in <= $urandom();      // doesn't matter
+            // data_in <= $urandom();      // doesn't matter
             @(posedge clk);
             // if (i == 0) $writememh ("../sim/UART16550A/fifo_mem.txt", u_fifo.mem);
         end
-        // foreach (u_fifo.mem[i]) begin
-        //     $display("Contents of the FIFO after Read: mem[%0d]: %0h",i, u_fifo.mem[i]);
-        // end
+
 
         @(posedge clk);
         $finish;
