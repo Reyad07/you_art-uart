@@ -9,7 +9,6 @@ FL += $(YOU_ART-UART)/src/simple/uart_rx.sv
 FL += $(YOU_ART-UART)/src/simple/uart_tx.sv
 FL += $(YOU_ART-UART)/src/simple/uart_top.sv
 FL += $(YOU_ART-UART)/src/UART16550A/uart_fifo.sv
-FL += $(YOU_ART-UART)/src/UART16550A/check_fifo.sv
 
 FL += $(YOU_ART-UART)/sim/uart_tb.sv
 FL += $(YOU_ART-UART)/sim/UART16550A/uart_fifo_tb.sv
