@@ -96,10 +96,4 @@ module uart_fifo_tb;
         $dumpvars;
     end
 
-    initial begin
-        if ($test$plusargs("UART")) $display("UART16550 Testing.......");
-
-    end
-
-
 endmodule
