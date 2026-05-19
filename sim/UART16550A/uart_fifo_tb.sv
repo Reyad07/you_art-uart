@@ -61,11 +61,11 @@ module uart_fifo_tb;
         initialize_values();
 
         // threshold configuration
+        threshold <= 4'ha;
         
         // write data into the fifo -- DONE
         @(posedge clk);
-        for (int i=0; i<20; i++) begin
-            threshold <= 4'ha;
+        for (int i=0; i<16; i++) begin
             en      <= 1'b1;
             push_in <= 1'b1;
             pop_in  <= 1'b0;
@@ -78,12 +78,11 @@ module uart_fifo_tb;
                 
         // read data from the fifo -- DONE
         // @(posedge clk);
-        for (int i=0; i<20; i++) begin
-            threshold <= 4'ha;
+        for (int i=0; i<16; i++) begin
             en      <= 1'b1;
             push_in <= 1'b0;
             pop_in  <= 1'b1;
-            // data_in <= $urandom();
+            data_in <= $urandom();      // doesn't matter
             @(posedge clk);
             // if (i == 0) $writememh ("../sim/UART16550A/fifo_mem.txt", u_fifo.mem);
         end

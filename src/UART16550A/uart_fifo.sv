@@ -87,12 +87,12 @@ module uart_fifo (
         end
     end
 
-        // memory update
+    // memory update
     always_ff @(posedge clk) begin
         case ({push_f,pop_f})
         2'b00: ;
         2'b01: begin
-            for (int i = 0; i < 14; i++) begin
+            for (int i = 0; i <= 14; i++) begin
                 mem[i] <= mem[i+1];     // mem[0] <= mem[1], mem[1] <= mem[2],...
             end
             mem[15] <= '0;
@@ -102,7 +102,7 @@ module uart_fifo (
             mem[ptr] <= data_in;
         end
         2'b11: begin
-            for (int i = 0; i < 14; i++) begin
+            for (int i = 0; i <= 14; i++) begin
                 mem[i] <= mem[i+1];     // mem[0] <= mem[1], mem[1] <= mem[2],...
             end
             mem[15] <= '0;
